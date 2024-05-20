@@ -56,4 +56,12 @@ async def get_salaries_by_group(dt_from, dt_upto, group_type):
 
     res = data.aggregate(query)
     res = await res.to_list(length=None)
-    return res
+
+    salaries = {'dataset': [], 'labels': []}
+
+    for i in res:
+        salaries['dataset'].append(i['total_value'])
+        formatted_date = datetime.strptime(i['date'], group_type_format[group_type])
+        salaries['labels'].append(formatted_date)
+
+    return salaries

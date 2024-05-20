@@ -3,6 +3,12 @@ import motor.motor_asyncio
 
 
 async def get_salaries_by_group(dt_from, dt_upto, group_type):
+    group_type_format = {
+        'hour': '%Y-%m-%dT%H',
+        'day': '%Y-%m-%d',
+        'month': '%Y-%m'
+    }
+
     dt_from = datetime.strptime(dt_from, '%Y-%m-%dT%H:%M:%S')
     dt_upto = datetime.strptime(dt_upto, '%Y-%m-%dT%H:%M:%S')
 
@@ -25,7 +31,7 @@ async def get_salaries_by_group(dt_from, dt_upto, group_type):
                 '_id': {
                     '$dateToString': {
                         'date': '$dt',
-                        'format': '%Y-%m-%dT%H'
+                        'format': group_type_format[group_type]
                     }
                 },
                 'total_value': {
@@ -40,7 +46,14 @@ async def get_salaries_by_group(dt_from, dt_upto, group_type):
                 'total_value': 1
             }
         },
+        {
+            '$sort':
+                {
+                    'date': 1
+                }
+        }
     ]
+
     res = data.aggregate(query)
     res = await res.to_list(length=None)
     return res

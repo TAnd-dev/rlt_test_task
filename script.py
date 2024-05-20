@@ -1,5 +1,6 @@
 from datetime import datetime
 import motor.motor_asyncio
+from dateutil.relativedelta import relativedelta
 
 
 async def get_salaries_by_group(dt_from, dt_upto, group_type):
@@ -58,10 +59,13 @@ async def get_salaries_by_group(dt_from, dt_upto, group_type):
     res = await res.to_list(length=None)
 
     salaries = {'dataset': [], 'labels': []}
+    result_dict = {datetime.strptime(i['date'], group_type_format[group_type]): i['total_value'] for i in res}
+    current_date = dt_from
 
-    for i in res:
-        salaries['dataset'].append(i['total_value'])
-        formatted_date = datetime.strptime(i['date'], group_type_format[group_type])
+    while current_date < dt_upto:
+        formatted_date = current_date.strftime('%Y-%m-%dT%H:%M:%S')
         salaries['labels'].append(formatted_date)
+        salaries['dataset'].append(result_dict.get(current_date, 0))
+        current_date += relativedelta(**{group_type + 's': 1})
 
     return salaries

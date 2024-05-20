@@ -2,6 +2,7 @@ import asyncio
 import logging
 import sys
 import json
+from json import JSONDecodeError
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
@@ -24,6 +25,12 @@ async def get_salaries(message: Message) -> None:
         group_type = data['group_type']
         res = await get_salaries_by_group(dt_from, dt_upto, group_type)
         await message.answer(str(res))
+    except JSONDecodeError:
+        await message.answer('Invalid message. You must provide json data')
+    except KeyError:
+        await message.answer('Invalid data. Incorrect key or group type')
+    except ValueError:
+        await message.answer('Invalid data. Invalid date')
     except Exception as e:
         await message.answer('Error')
         print(e)

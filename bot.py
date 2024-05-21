@@ -24,7 +24,7 @@ async def get_salaries(message: Message) -> None:
         dt_upto = data['dt_upto']
         group_type = data['group_type']
         res = await get_salaries_by_group(dt_from, dt_upto, group_type)
-        await message.answer(str(res))
+        await message.answer(str(res).replace("'", '"'))
     except JSONDecodeError:
         await message.answer('Invalid message. You must provide json data')
     except KeyError:

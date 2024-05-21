@@ -62,7 +62,7 @@ async def get_salaries_by_group(dt_from, dt_upto, group_type):
     result_dict = {datetime.strptime(i['date'], group_type_format[group_type]): i['total_value'] for i in res}
     current_date = dt_from
 
-    while current_date < dt_upto:
+    while current_date <= dt_upto:
         formatted_date = current_date.strftime('%Y-%m-%dT%H:%M:%S')
         salaries['labels'].append(formatted_date)
         salaries['dataset'].append(result_dict.get(current_date, 0))
